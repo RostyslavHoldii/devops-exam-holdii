@@ -1,0 +1,29 @@
+name: Task 2 - Ansible
+on: 
+  workflow_dispatch:
+    inputs:
+      target_ip:
+        description: 'IP адреса віртуальної машини'
+        required: true
+
+jobs:
+  ansible-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ github.event.inputs.target_ip }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible Check (Dry-run)
+        run: |
+          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u ubuntu task2/playbook.yml --check
+          
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u ubuntu task2/playbook.yml
