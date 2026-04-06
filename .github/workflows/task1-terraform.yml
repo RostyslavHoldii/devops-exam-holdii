@@ -12,6 +12,8 @@ jobs:
       DIGITALOCEAN_TOKEN: ${{ secrets.DO_PAT }}
       AWS_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEY }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
+      SPACES_ACCESS_KEY_ID: ${{ secrets.SPACES_ACCESS_KEY }}       
+      SPACES_SECRET_ACCESS_KEY: ${{ secrets.SPACES_SECRET_KEY }}
       TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
     defaults:
       run:
@@ -28,7 +30,8 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -detailed-exitcode
-        
+        continue-on-error: true
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
         run: terraform apply -auto-approve
