@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       target_ip:
-        description: 'IP адреса віртуальної машини'
+        description: 'IP адреса віртуальної машини (holdii-node)'
         required: true
 
 jobs:
@@ -22,8 +22,8 @@ jobs:
 
       - name: Run Ansible Check (Dry-run)
         run: |
-          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u ubuntu task2/playbook.yml --check
+          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u root task2/playbook.yml --check
           
       - name: Run Ansible Playbook
         run: |
-          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u ubuntu task2/playbook.yml
+          ansible-playbook -i "${{ github.event.inputs.target_ip }}," -u root task2/playbook.yml
