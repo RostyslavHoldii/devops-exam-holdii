@@ -75,14 +75,15 @@ jobs:
           envs: NAMESPACE, HOST_PORT
           script: |
             export PATH=$PATH:/usr/local/bin
-
-            # Створення namespace
+            
             kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
-
-            kubectl apply -f /root/task3/deployment.yaml --dry-run=client
-
+            
             kubectl apply -f /root/task3/deployment.yaml
-
+            
+            echo "Очікуємо, поки застосунок повністю запуститься..."
+            kubectl rollout status deployment/exam-app -n $NAMESPACE --timeout=90s
+            
             fuser -k $HOST_PORT/tcp || true
-
-            nohup kubectl port-forward svc/exam-app-svc $HOST_PORT:80 -n $NAMESPACE --address 0.0.0.0 > /dev/null 2>&1 &
+            
+            nohup kubectl port-forward svc/exam-app-svc $HOST_PORT:80 -n $NAMESPACE --address 0.0.0.0 > /root/port-forward-$NAMESPACE.log 2>&1 &
+            sleep 3 
